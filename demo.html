@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Demo</title>
+
+    <style>
+        body {
+            background: white;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+
+        .label {
+            font-size: 70px;
+            font-weight: bold;
+            color: black;
+            margin-top: 20px;
+        }
+
+        .value {
+            font-size: 85px;
+            font-weight: bold;
+            color: black;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="label">Strike Rate</div>
+    <!-- Changed initial 0 to 10 (minimum valid value) -->
+    <div id="strike" class="value">10</div>
+
+    <div class="label">CPU Usage</div>
+    <!-- Changed initial 0 to 1 -->
+    <div id="cpu" class="value">1</div>
+
+    <div class="label">Machine ID</div>
+    <!-- Changed initial 0 to 1 -->
+    <div id="ma_id" class="value">1</div>
+
+    <script>
+        function rand(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function updateValues() {
+            let sr = rand(10, 150);
+            let cpu = rand(1, 90);
+            let id = rand(1,170)
+
+            document.getElementById("strike").innerText = sr;
+            document.getElementById("cpu").innerText = cpu;
+            document.getElementById("ma_id").innerText = id;
+
+        }
+        
+        // FIX: Run this immediately so numbers appear instantly on load
+        updateValues();
+        
+        // Then continue updating every second
+        setInterval(updateValues, 1000);
+    </script>
+
+</body>
+</html>
