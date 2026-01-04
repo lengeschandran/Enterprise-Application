@@ -9,7 +9,7 @@ import ctypes
 
 # --- CRITICAL FIX FOR WINDOWS XP / PYTHON 3.4 ---
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-# ------------------------------------------------
+
 
 try:
     from PIL import Image, ImageOps, ImageGrab, ImageEnhance, ImageFilter
@@ -19,14 +19,14 @@ except ImportError:
 
 import pytesseract
 
-# --- WINDOWS API SETUP ---
+
 class RECT(ctypes.Structure):
     _fields_ = [("left", ctypes.c_long),
                 ("top", ctypes.c_long),
                 ("right", ctypes.c_long),
                 ("bottom", ctypes.c_long)]
 
-# Enable High-DPI scaling to ensure coordinates match your actual screen layout
+# Enable High-DPI scaling to ensure coordinates match actual screen layout
 try:
     ctypes.windll.shcore.SetProcessDpiAwareness(1)
 except Exception:
@@ -38,13 +38,13 @@ except Exception:
 # --- CONFIGURATION ---
 
 # The script will search for any window containing this text in its title.
-# It works regardless of where the window is positioned on the screen.
+
 TARGET_WINDOW_PARTIAL_NAME = "OCR Demo" 
 
 REFRESH_RATE = 1
 DEBUG_SCREENSHOTS_DIR = "debug_screenshots"
 
-# ---------------------
+
 
 def get_window_bbox_partial(partial_name):
     """Scans ALL open windows for partial title match."""
@@ -65,7 +65,7 @@ def get_window_bbox_partial(partial_name):
             user32.GetWindowRect(hwnd, ctypes.byref(rect))
             found_rect.append((rect.left, rect.top, rect.right, rect.bottom))
             found_rect.append(title)
-            return False # Stop enumerating after finding the first match
+            return False 
         return True
 
     WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
@@ -78,27 +78,24 @@ def get_window_bbox_partial(partial_name):
 def extract_data(image_source):
     """Runs OCR and parses the text."""
     try:
-        # --- IMPROVED PRE-PROCESSING ---
-        # 1. NO RESIZING: The HTML font is already 85px (huge). 
-        #    Upscaling it further confuses Tesseract.
+        
         img = image_source 
 
-        # 2. Enhance Contrast
+        #  Enhance Contrast
         enhancer = ImageEnhance.Contrast(img)
         img = enhancer.enhance(2.0)
 
-        # 3. Convert to Grayscale
+        #  Convert to Grayscale
         img = img.convert('L') 
         
-        # 4. Thicken Text (Morphological Dilation)
-        #    Reduced filter size because we aren't upscaling anymore
+        
         img = img.filter(ImageFilter.MinFilter(1)) 
 
-        # 5. Invert if needed (Check darker background)
+        #  Invert if needed (Check darker background)
         if img.getpixel((0, 0)) < 128: 
             img = ImageOps.invert(img)
             
-        # 6. Binarize (High threshold to isolate text)
+        #  Binarize (High threshold to isolate text)
         thresh = 150
         fn = lambda x : 255 if x > thresh else 0
         img = img.convert('L').point(fn, mode='1')
@@ -145,8 +142,8 @@ def capture_and_process(bbox):
         # 2. Run OCR *before* saving
         data = extract_data(screenshot)
         
-        # 3. Check for Success
-        # We consider it a success if we found ANY of the target values
+        
+        #  consider it a success if found ANY of the target values
         success = False
         if isinstance(data, dict) and "Error" not in data:
             if data.get("Strike Rate") or data.get("CPU Usage") or data.get("Machine ID"):
@@ -203,7 +200,7 @@ if __name__ == "__main__":
     try:
         while True:
             # Dynamically find the window location every loop
-            # This allows you to move the window around without breaking the script
+            # This(hopefully) allows to move the window around without breaking the script
             bbox, title_display = get_window_bbox_partial(TARGET_WINDOW_PARTIAL_NAME)
             
             if bbox:
@@ -233,4 +230,5 @@ if __name__ == "__main__":
             time.sleep(REFRESH_RATE)
 
     except KeyboardInterrupt:
+
         print("\nStopping monitor...")
