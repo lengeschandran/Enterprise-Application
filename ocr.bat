@@ -5,13 +5,13 @@ TITLE OCR Monitor Launcher
 cd /d "%~dp0"
 
 echo ==================================================
-echo       Starting OCR Monitor (Python 3.4+)
+echo       Starting OCR Monitor 
 echo ==================================================
 echo.
 
-:: ---------------------------------------------------------
+
 :: FIND PYTHON
-:: ---------------------------------------------------------
+
 :: Priority 1: Check for local virtual environment 'xp_env'
 if exist "%~dp0xp_env\Scripts\python.exe" (
     set PYCMD="%~dp0xp_env\Scripts\python.exe"
@@ -48,4 +48,5 @@ if %errorlevel% NEQ 0 (
 echo.
 echo --------------------------------------------------
 echo Script execution finished.
+
 pause
